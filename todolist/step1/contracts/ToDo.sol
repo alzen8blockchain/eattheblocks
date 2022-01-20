@@ -1,4 +1,4 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.8.0;
 
 contract ToDo {
   struct Task {
@@ -11,16 +11,16 @@ contract ToDo {
 
   Task[] tasks;
 
-  function createTask(string _content, string _author) public {
-    tasks.push(Task(tasks.length, now, _content, _author, false));
+  function createTask(string calldata _content , string calldata _author) public {
+    tasks.push(Task(tasks.length, block.timestamp, _content, _author, false));
   }
 
-  function getTask(uint id) public constant 
+  function getTask(uint id) public view  
     returns(
       uint,
       uint,
-      string,
-      string,
+      string memory,
+      string memory,
       bool
     ) {
       return(
@@ -33,7 +33,7 @@ contract ToDo {
     }
 
     //will not work because cant return array of struct yet in Solidity
-    //function getTasks() public constant returns(Task[]) {
-    //  return tasks;
-    //}
+    function getTasks() public view returns(Task[] memory) {
+     return tasks;
+    }
 }
