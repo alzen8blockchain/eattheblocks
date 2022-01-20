@@ -1,4 +1,4 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.8.0;
 
 contract ToDo {
   struct Task {
@@ -13,29 +13,30 @@ contract ToDo {
   uint[] taskIds;
   mapping(uint => Task) tasks;
 
-  event TaskCreated(uint, uint, string, string, bool);
+  event TaskCreated(
+    uint id, 
+    uint date, 
+    string content,
+    string author, 
+    bool done);
 
-  function ToDo() public {
+  constructor() public {
     lastTaskId = 0;
   }
-
-  function createTask(string _content, string _author) public {
+  
+  function createTask(string calldata _content , string calldata _author) public {
     lastTaskId++;
-    tasks[lastTaskId] = Task(lastTaskId, now, _content, _author, false);
+    tasks[lastTaskId] = Task(lastTaskId,  block.timestamp, _content, _author, false);
     taskIds.push(lastTaskId);
-    TaskCreated(lastTaskId, now, _content, _author, false);
+    emit TaskCreated(lastTaskId,  block.timestamp, _content, _author, false); 
   }
 
-  function getTaskIds() public constant returns(uint[]) {
-    return taskIds;
-  }
-
-  function getTask(uint id) taskExists(id) public constant 
+  function getTask(uint id) taskExists(id) public view  
     returns(
       uint,
       uint,
-      string,
-      string,
+      string memory,
+      string memory,
       bool
     ) {
 
@@ -48,6 +49,14 @@ contract ToDo {
       );
     }
 
+    //will not work because cant return array of struct yet in Solidity
+    // function getTasks() public view returns(Task[] memory) {
+    //  return tasks;
+    // }
+
+    function getTaskIds() public view returns(uint[] memory) {
+      return taskIds;
+    }
     modifier taskExists(uint id) {
       if(tasks[id].id == 0) {
         revert();
